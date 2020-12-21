@@ -1,5 +1,29 @@
 import sys
 
+points = [
+    (18, 0),
+    (0, 1),
+    (5, 1),
+    (6, 1),
+    (11, 1),
+    (12, 1),
+    (17, 1),
+    (18, 1),
+    (19, 1),
+    (1, 2),
+    (4, 2),
+    (7, 2),
+    (10, 2),
+    (13, 2),
+    (16, 2)
+]
+
+class Pixel:
+
+    def __init__(self, c):
+        self.c = c
+        self.is_monster = False
+
 class Grid:
 
     def __init__(self, size):
@@ -10,7 +34,7 @@ class Grid:
         self.y_flipped = False
         self.rotation = 0
         
-        self._values = ['.'] * size * size
+        self._values = ['*'] * size * size
 
 
     def _find_index(self, x, y):
@@ -195,5 +219,42 @@ i_hi = max(k[0] for k in s)
 j_lo = min(k[1] for k in s)
 j_hi = max(k[1] for k in s)
 
-solution = s[i_lo,j_lo].id * s[i_lo, j_hi].id * s[i_hi, j_lo].id * s[i_hi, j_hi].id
-print(solution)
+image = Grid(puzzle.size * 8)
+print(image.size)
+
+for i in range(i_lo, i_hi + 1):
+    for j in range(j_lo, j_hi + 1):
+        a = (i - i_lo) * 8
+        b = (j - j_lo) * 8
+        for x in range (1, 9):
+            for y in range(1, 9):
+                image[a + x - 1, b + y - 1] = Pixel(s[i, j][x, y])
+
+
+def is_monster(image_grid, i, j):
+    if i + 20 >= image_grid.size or j + 3 >= image_grid.size:
+        return False
+
+    for p in points:
+        if not image_grid[i + p[0], j + p[1]].c == '#':
+            return False
+
+    for p in points:
+        image_grid[i + p[0], j + p[1]].is_monster = True
+
+
+    return True
+
+for t in image.all_permutations():   
+    for i in range(image.size):
+        for j in range(image.size):
+            if is_monster(image, i, j):
+                print('Found one!')
+
+
+total = 0
+for i in range(image.size):
+    for j in range(image.size):
+        if image[i,j].c == '#' and not image[i,j].is_monster:
+            total += 1
+print(total)
