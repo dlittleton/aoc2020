@@ -34,4 +34,5 @@ for line in map(str.rstrip, sys.stdin):
     points[coord] = not points[coord]
 
 
-print(sum(1 for v in points.values() if v))
+black = set(p for p in points if points[p])
+print(len(black))
